@@ -28,11 +28,11 @@ class Project(
 
     var endYear: Int? = endYear
 
-    var endMonth: Int? = startMonth
+    var endMonth: Int? = endMonth
 
     var isActive: Boolean = isActive
 
-    @OneToMany(targetEntity = Project::class,
+    @OneToMany(targetEntity = ProjectDetail::class,
             fetch = FetchType.LAZY,
             cascade = [(CascadeType.PERSIST)])
     @JoinColumn(name = "project_id")
