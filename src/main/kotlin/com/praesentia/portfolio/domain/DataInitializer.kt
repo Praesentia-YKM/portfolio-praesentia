@@ -4,6 +4,7 @@ import com.praesentia.portfolio.domain.constant.SkillType
 import com.praesentia.portfolio.domain.entity.*
 import com.praesentia.portfolio.domain.repository.*
 import jakarta.annotation.PostConstruct
+import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 import java.time.LocalDate
@@ -14,20 +15,23 @@ import java.time.LocalDate
  * 즉, 아무 프로파일도 지정하지 않으면 @Profile("default")가 붙은 빈(Bean)이 활성화됨.
  */
 @Component
-@Profile(value = ["default"]) // profile이 default일때만 이 클래스를 빈으로 등록해라!
+@Profile(value = ["default"])
 class DataInitializer(
     private val achievementRepository: AchievementRepository,
+    private val experienceRepository: ExperienceRepository,
     private val introductionRepository: IntroductionRepository,
     private val linkRepository: LinkRepository,
-    private val skillRepository: SkillRepository,
     private val projectRepository: ProjectRepository,
-    private val experienceRepository: ExperienceRepository
+    private val skillRepository: SkillRepository,
+    private val accountRepository: AccountRepository
 ) {
+
+    val log = LoggerFactory.getLogger(DataInitializer::class.java)
+
     @PostConstruct
     fun initializeData() {
-        // println 은 동기처리(멀티스레드 환경에서 특정 코드 블록을 한 번에 하나의 스레드만 실행하도록 보장하는 역할)
-        // 가 되어있어서 성능에 안 좋다. 보통은 실무에서 로거를 쓴다.
-        println("스프링이 실행되었습니다. 테스트 데이터를 초기화합니다.")
+
+        log.info("스프링이 실행되었습니다. 테스트 데이터를 초기화합니다.")
 
         // achievement 초기화
         val achievements = mutableListOf<Achievement>(
@@ -58,7 +62,7 @@ class DataInitializer(
 
         // link 초기화
         val links = mutableListOf<Link>(
-            Link(name = "Github", content = "https://github.com/Praesentia-YKM", isActive = true),
+            Link(name = "Github", content = "https://github.com/infomuscle", isActive = true),
             Link(name = "Linkedin", content = "https://www.linkedin.com/in/bokeunjeong", isActive = true),
         )
         linkRepository.saveAll(links)
@@ -90,7 +94,6 @@ class DataInitializer(
         )
         experience2.addDetails(
             mutableListOf(
-                // saveALL호출 시, CascadeType.ALL 으로 인해서 ExperienceDetail도 같이 insert쿼리가 돈다.
                 ExperienceDetail(content = "유기묘 위치 공유 서비스 개발", isActive = true),
                 ExperienceDetail(content = "신입 교육 프로그램 우수상 수상", isActive = true)
             )
@@ -146,7 +149,7 @@ class DataInitializer(
             mutableListOf(
                 ProjectDetail(content = "PIL(Pillow) 활용하여 이미지 분석 기능 개발", url = null, isActive = true),
                 ProjectDetail(content = "알림 발송을 비동기 처리하여 이미지 분석 - 알림 발송 기능간 의존도 감소", url = null, isActive = true),
-                ProjectDetail(content = "Github Repository", url = "https://github.com/Praesentia-YKM/portfolio-praesentia", isActive = true)
+                ProjectDetail(content = "Github Repository", url = "https://github.com/infomuscle", isActive = true)
             )
         )
         project2.skills.addAll(
@@ -158,5 +161,10 @@ class DataInitializer(
         )
         projectRepository.saveAll(mutableListOf(project1, project2))
 
+        val account = Account(
+            loginId = "admin1",
+            pw = "\$2a\$10\$BWi6SLqZRJyVvJyufjTtHeYXNNhpNY9rxaVl9fBOE.1t3QF98B.cO"
+        )
+        accountRepository.save(account)
     }
 }

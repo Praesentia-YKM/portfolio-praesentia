@@ -11,7 +11,7 @@ abstract class BaseEntity {
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
-    var createdDataTime: LocalDateTime = LocalDateTime.now()
+    var createdDateTime: LocalDateTime = LocalDateTime.now()
 
     @LastModifiedDate // updatable의 기본값이 true라서 생략 가능
     @Column(nullable = false)
